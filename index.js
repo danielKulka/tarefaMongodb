@@ -46,32 +46,36 @@ app.post("/login", async (req,res) => {
 });
 
 app.get("/validar" , (req,res) => {
-  const authHeader = req.headers.authorization;
+  try{
+    const authHeader = req.headers.authorization;
 
-  if(!authHeader){
-    return res.status(401).send({ message: "O token não foi informado!"});
-  }
-
-  const parts = authHeader.split(" ");
-
-  if(parts.length !== 2){
-    return res.status(401).send({ message: "Token inválido!"});
-  }
-
-  const [scheme, token] = parts;
-
-  if(!/^Bearer$/i.test(scheme)){
-    return res.status(401).send({ message: "Token malformatado!"});
-  }
-
-  jwt.verify(token, segredo, (err, decoded) => {
-    
-    if(err){
-      console.log(`erro: ${err}`);
-      return res.status(500).send({message: `erro interno, tente novamente`});
+    if(!authHeader){
+      return res.status(401).send({ message: "O token não foi informado!"});
     }
-    return res.send(decoded);
-  });
+
+    const parts = authHeader.split(" ");
+
+    if(parts.length !== 2){
+      return res.status(401).send({ message: "Token inválido!"});
+    }
+
+    const [scheme, token] = parts;
+
+    if(!/^Bearer$/i.test(scheme)){
+      return res.status(401).send({ message: "Token malformatado!"});
+    }
+
+    jwt.verify(token, segredo, (err, decoded) => {
+      
+      if(err){
+        console.log(`erro: ${err}`);
+        return res.status(500).send({message: `erro interno, tente novamente`});
+      }
+      return res.send(decoded);
+    });
+  }catch{
+    console.log(`erro:${err}`);
+  }
 });
 
 app.get("/contato", (req,res) =>{
